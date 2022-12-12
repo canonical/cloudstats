@@ -1,0 +1,6 @@
+mock
+pytest
+pytest-cov
+pytest-html
+numpy
+requests

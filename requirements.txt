@@ -1,0 +1,7 @@
+prometheus-client
+pyyaml
+confuse
+requests
+openstacksdk
+pyjwt
+PyYAML

@@ -1,0 +1,36 @@
+# Default cloudstats configuration
+
+debug: False
+
+exporter:
+    port: 9748
+    collect_interval: 15
+
+landscape:
+    uri: ""
+    key: ""
+    secret: ""
+    ca: /var/snap/cloudstats/common/ca.pem
+
+openstack:
+    auth_url: http://127.0.0.1:5000/v3
+    password: example_password
+    username: admin
+    auth_type: password
+    user_domain_name: admin_domain
+    project_domain_name: admin_domain
+    region_name: example_region
+    project_name: admin
+    cacert: ""
+    auth_version: 3
+    identity_api_version: 3
+
+api:
+    url: "http://example.com:8000/"
+    http_proxy: ""
+    https_proxy: ""
+    cloud_uuid: "example-uuid"
+    refresh_token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwidXNlcl9pZCI6MTQsImp0aSI6IjRlM2RjZWYzODcyYjE0NmI5M2txYnViNDk0Yjk2OWMwIiwiZXhwIjoxNTk2MzYyNDkxfQ.J-3QV0W4V2QUt0TETvrZUUZnV6JYWcN9I79V0Ew5sDA" # solely for example/test purposes, not in production use
+
+prometheus:
+    url: ""  # e.g. http://127.0.0.1:9090/

@@ -1,0 +1,150 @@
+query_config:
+  project_stats:
+    largest_project: [result_is_element_name]
+  ipaddress_stats:
+    min_subnet_free_name: [result_is_element_name]
+dashboard_config:
+  gridPos:
+    hypervisor_stats: {"h": 42, "w": 7, "x": 0, "y": 0}
+    virtual_server_stats: {"h": 18, "w": 6, "x": 7, "y": 0}
+    project_stats: {"h": 8, "w": 6, "x": 7, "y": 18}
+    ipaddress_stats: {"h": 8, "w": 6, "x": 7, "y": 26}
+    image_stats: {"h": 8, "w": 6, "x": 13, "y": 0}
+    volume_stats: {"h": 8, "w": 6, "x": 13, "y": 8}
+    object_storage_stats: {"h": 13, "w": 6, "x": 13, "y": 16}
+    networking_stats: {"h": 6, "w": 6, "x": 13, "y": 29}
+  labels:
+    hypervisor_stats:
+      num_hosts: Number of hypervisors
+      total_running_vms: Number of running virtual machines across all hypervisors
+      total_memory: Total memory available for scheduling across all hypervisors
+      total_vcpus: Total vCPUs across all hypervisors
+      total_vcpus_used: Total scheduled vCPUs across all hypervisors
+      total_cores: Total phyiscal processor cores across all hypervisors
+      total_local_disk: Total ephemeral storage across all hypervisors
+      total_local_disk_used: Total ephemeral storage in-use across all hypervisors
+      total_local_disk_free: Total ephemeral storage available for scheduling across all hypervisors
+      _running_vms: VMs scheduled per hypervisor
+      _memory_free: Memory free per hypervisor
+      _vcpus_free: Schedulable vCPUs free per hypervisor
+      _vcpus_used: Schedulable vCPUs used per hypervisor
+      _cores: Number of physical processing cores per hypervisor
+      _cpu_overcommit: Amount of scheduled vCPUs vs hypervisor threads per hypervisor
+      _ram_overcommit: Amount of scheduled RAM vs hypervisor available ram per hypervisor
+      _local_disk_free: Amount of available local ephemeral storage per hypervisor
+      _local_disk_used: Amount of used local ephemeral storage per hypervisor
+
+
+hypervisor_stats:
+  num_hosts: count(sum by (hypervisor_hostname) (hypervisor_vcpus_total))
+  total_running_vms: sum(hypervisor_running_vms)
+  min_running_vms: min(sum by (hypervisor_hostname) (hypervisor_running_vms))
+  mean_running_vms: round(avg(sum by (hypervisor_hostname) (hypervisor_running_vms)), 0.1)
+  median_running_vms: quantile(0.5, sum by (hypervisor_hostname) (hypervisor_running_vms))
+  median_memory_free: quantile(0.5, hypervisor_memory_mbs_total - hypervisor_memory_mbs_used)
+  mean_memory_free: round(avg(hypervisor_memory_mbs_total - hypervisor_memory_mbs_used), 0.1)
+  min_memory_free: min(hypervisor_memory_mbs_total - hypervisor_memory_mbs_used)
+  total_memory: sum(hypervisor_memory_mbs_total)
+  median_vcpus_free: quantile(0.5, hypervisor_vcpus_total - hypervisor_vcpus_used)
+  mean_vcpus_free: round(avg(hypervisor_vcpus_total - hypervisor_vcpus_used), 0.1)
+  min_vcpus_free: min(hypervisor_vcpus_total - hypervisor_vcpus_used)
+  median_vcpus_used: quantile(0.5, hypervisor_vcpus_used)
+  mean_vcpus_used: round(avg(hypervisor_vcpus_used), 0.1)
+  min_vcpus_used: min(hypervisor_vcpus_used)
+  total_vcpus_used: sum(hypervisor_vcpus_used)
+  total_vcpus: sum(hypervisor_vcpus_total)
+  max_cores: max(hypervisor_topology_n_cores)
+  median_cores: quantile(0.5, hypervisor_topology_n_cores)
+  mean_cores: round(avg(hypervisor_topology_n_cores), 0.1)
+  min_cores: min(hypervisor_topology_n_cores)
+  total_cores: max(hypervisor_topology_n_cores)
+  max_cpu_overcommit: round(max(hypervisor_vcpus_used / hypervisor_vcpus_total), 0.1)
+  median_cpu_overcommit: round(quantile(0.5, hypervisor_vcpus_used / hypervisor_vcpus_total), 0.1)
+  mean_cpu_overcommit: round(avg(hypervisor_vcpus_used / hypervisor_vcpus_total), 0.1)
+  min_cpu_overcommit: round(min(hypervisor_vcpus_used / hypervisor_vcpus_total), 0.1)
+  total_cpu_overcommit: round(sum(hypervisor_vcpus_used / hypervisor_vcpus_total), 0.1)
+  max_ram_overcommit: round(max(hypervisor_memory_mbs_used / hypervisor_memory_mbs_total), 0.1)
+  median_ram_overcommit: round(quantile(0.5, hypervisor_memory_mbs_used / hypervisor_memory_mbs_total), 0.1)
+  mean_ram_overcommit: round(avg(hypervisor_memory_mbs_used / hypervisor_memory_mbs_total), 0.1)
+  min_ram_overcommit: round(min(hypervisor_memory_mbs_used / hypervisor_memory_mbs_total), 0.1)
+  total_ram_overcommit: round(sum(hypervisor_memory_mbs_used / hypervisor_memory_mbs_total), 0.1)
+  median_local_disk_free: quantile(0.5, hypervisor_disk_gbs_total - hypervisor_disk_gbs_used)
+  mean_local_disk_free: round(avg(hypervisor_disk_gbs_total - hypervisor_disk_gbs_used), 0.1)
+  min_local_disk_free: min(hypervisor_disk_gbs_total - hypervisor_disk_gbs_used)
+  total_local_disk_free: sum(hypervisor_disk_gbs_total - hypervisor_disk_gbs_used)
+  median_local_disk_used: quantile(0.5, hypervisor_disk_gbs_used)
+  mean_local_disk_used: round(avg(hypervisor_disk_gbs_used), 0.1)
+  min_local_disk_used: min(hypervisor_disk_gbs_used)
+  total_local_disk_used: sum(hypervisor_disk_gbs_used)
+  total_local_disk: sum(hypervisor_disk_gbs_total)
+virtual_server_stats:
+  num_servers: count(libvirt_domain_info_virtual_cpus)
+  max_server_vcpus: max(libvirt_domain_info_virtual_cpus)
+  median_server_vcpus: quantile(0.5, libvirt_domain_info_virtual_cpus)
+  mean_server_vcpus: round(avg(libvirt_domain_info_virtual_cpus), 0.1)
+  min_server_vcpus: min(libvirt_domain_info_virtual_cpus)
+  total_server_vcpus: sum(libvirt_domain_info_virtual_cpus)
+  max_server_memory: max(libvirt_domain_info_maximum_memory_bytes / 1024 / 1024)
+  median_server_memory: quantile(0.5, libvirt_domain_info_maximum_memory_bytes / 1024 / 1024)
+  mean_server_memory: round(avg(libvirt_domain_info_maximum_memory_bytes / 1024 / 1024), 0.1)
+  min_server_memory: min(libvirt_domain_info_maximum_memory_bytes / 1024 / 1024)
+  total_server_memory: sum(libvirt_domain_info_maximum_memory_bytes / 1024 / 1024)
+  total_ephemeral_servers: count(sum by (server_uuid) (server_ephemeral_size))
+  max_ephemeral_size: max(sum by (server_uuid) (server_ephemeral_size))
+  median_ephemeral_size: quantile(0.5, sum by (server_uuid) (server_ephemeral_size))
+  mean_ephemeral_size: round(avg(sum by (server_uuid) (server_ephemeral_size)), 0.1)
+  mean_ephemeral_size: round(avg(sum by (server_uuid) (server_ephemeral_size)), 0.1)
+  min_ephemeral_size: min(sum by (server_uuid) (server_ephemeral_size))
+  total_ephemeral_size: sum(server_ephemeral_size)
+object_storage_stats:
+  total_containers: count(container_objects)
+  total_object_count: sum(container_objects)
+  max_object_count: max(container_objects)
+  median_object_count: quantile(0.5, sum by (container_name) (container_objects))
+  mean_object_count: round(avg(sum by (container_name) (container_objects)), 0.1)
+  min_object_count: min(sum by (container_name) (container_objects))
+  total_object_bytes: sum(container_bytes)
+  max_container_bytes: max(container_bytes)
+  median_container_bytes: quantile(0.5, container_bytes)
+  mean_container_bytes: round(avg(container_bytes), 0.1)
+  min_container_bytes: min(container_bytes)
+image_stats:
+  num_images: count(glance_image_size)
+  mean_image_size: round(avg(glance_image_size) / 1000 / 1000, 0.1)  # in MB
+  max_image_size: round(avg(glance_image_size) / 1000 / 1000, 0.1)  # in MB
+  median_image_size: round(quantile(0.5, glance_image_size) / 1000 / 1000, 0.1)  # in MB
+  min_image_size: round(min(glance_image_size) / 1000 / 1000, 0.1)  # in MB
+  total_image_size: round(sum(glance_image_size) / 1000 / 1000, 0.1)  # in MB
+volume_stats:
+  num_volumes: count(cinder_volume_size)
+  max_volume_size: max(cinder_volume_size)
+  median_volume_size: quantile(0.5, cinder_volume_size)
+  mean_volume_size: round(avg(cinder_volume_size), 0.1)
+  min_volume_size: max(cinder_volume_size)
+  total_volume_size: sum(cinder_volume_size)
+ceph_stats:
+  ceph_cluster_capacity: round(ceph_cluster_capacity_bytes / 1000 / 1000 / 1000, 0.1)  # in GB
+  ceph_cluster_free: round(ceph_cluster_available_bytes / 1000 / 1000 / 1000, 0.1)  # in GB
+  ceph_cluster_used: round(ceph_cluster_used_bytes / 1000 / 1000 / 1000, 0.1)  # in GB
+ipaddress_stats:
+  num_floating_ip: sum(nova_quota_floating_ips{type="in_use"})
+  num_public_ip: sum(neutron_public_ip_usage)
+  min_subnet_free: bottomk(1,sum by (subnet_id) (neutron_subnet_ips_total-neutron_subnet_ips_used))
+  min_subnet_free_name: bottomk(1,sum by (subnet_id) (neutron_subnet_ips_total-neutron_subnet_ips_used))
+  mean_ip_allocation_percent: round(avg(sum by (subnet_id) (neutron_subnet_ips_used) / sum by (subnet_id) (neutron_subnet_ips_total) * 100), 0.1)
+  num_ip_allocated: sum(neutron_subnet_ips_used)
+networking_stats:
+  num_routers: neutron_total_routers
+  num_subnets: count(sum by (subnet_id) (neutron_subnet_ips_total))
+  num_networks: neutron_total_networks
+  num_load_balancers: neutron_total_networks
+project_stats:
+  num_projects: count (sum by (tenant) (nova_quota_instances{type="in_use"}))
+  num_active_projects: count (sum by (tenant) (nova_quota_instances{type="in_use"} > 0))
+  num_zero_instance_projects: count (sum by (tenant) (nova_quota_instances{type="in_use"} == 0))
+  largest_project: topk(1, sum by (tenant) (nova_quota_instances{type="in_use"}))
+  largest_project_count: topk(1, sum by (tenant) (nova_quota_instances{type="in_use"}))
+  # this only calculates average project sizes for non-zero-instance projects.
+  # To include 0 instance projects, remove the two instances of " > 0"
+  mean_project_size: round(sum(nova_quota_instances{type="in_use"} > 0) / count (sum by (tenant) (nova_quota_instances{type="in_use"} > 0)), 0.1)
+

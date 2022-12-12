@@ -1,0 +1,40 @@
+name: cloudstats
+base: core18
+version: git
+summary: provide and report cloudstats via prometheus-exporter
+description: |
+  Provides prometheus-exporter metrics interface for cloud capacity
+  planning and reporting.
+  Provides an interface to regularly update external API with latest statistics
+
+grade: stable
+confinement: strict
+
+parts:
+  cloudstats:
+    plugin: python
+    python-version: python3
+    source: .
+    requirements: [./requirements.txt]
+
+apps:
+  cloudstats-exporter:
+    command: cloudstats-exporter
+    daemon: simple
+    environment:
+        CLOUDSTATSDIR: $SNAP_COMMON/
+        LD_LIBRARY_PATH: "$LD_LIBRARY_PATH:$SNAP/usr/lib/x86_64-linux-gnu/blas/:$SNAP/usr/lib/x86_64-linux-gnu/lapack"
+    plugs: [network, network-bind]
+  cloudstats-reporter:
+    command: cloudstats-reporter
+    daemon: simple
+    environment:
+        CLOUDSTATSDIR: $SNAP_COMMON/
+        LD_LIBRARY_PATH: "$LD_LIBRARY_PATH:$SNAP/usr/lib/x86_64-linux-gnu/blas/:$SNAP/usr/lib/x86_64-linux-gnu/lapack"
+    plugs: [network]
+  cloudstats:
+    command: cloudstats
+    environment:
+        CLOUDSTATSDIR: $SNAP_COMMON/
+        LD_LIBRARY_PATH: "$LD_LIBRARY_PATH:$SNAP/usr/lib/x86_64-linux-gnu/blas/:$SNAP/usr/lib/x86_64-linux-gnu/lapack"
+    plugs: [network]
