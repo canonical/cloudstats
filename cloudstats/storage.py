@@ -21,7 +21,6 @@ class Storage:
     """Storage for cloudstats."""
 
     def __init__(self, filename=None):
-
         if not filename:
             filename = os.environ.get("CLOUDSTATSDIR", ".") + "/state.db"
 
